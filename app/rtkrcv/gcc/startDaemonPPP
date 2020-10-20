@@ -1,0 +1,2 @@
+#!/bin/bash
+nohup ~/RTKLIB/app/rtkrcv/gcc/rtkrcvPPP 2> exhibitor2.out &
