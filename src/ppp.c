@@ -490,9 +490,9 @@ static void udpos_ppp(rtk_t *rtk)
     double *F,*P,*FP,*x,*xp,pos[3],Q[9]={0},Qv[9];
     int i,j,*ix,nx;
     double solMB[6];
-    solMB[0] = 1112776.94605002;
-    solMB[1] = -4341475.90706758;
-    solMB[2] = 4522955.88325639;
+    solMB[0] = 1112776.94591965;
+    solMB[1] = -4341475.90709724;
+    solMB[2] = 4522955.88329561;
     solMB[3] = 0.000771568;
     solMB[4] = 0.000848929;
     solMB[5] = 0.000763933;
@@ -507,22 +507,15 @@ static void udpos_ppp(rtk_t *rtk)
     }*/
 
     /* initialize position for first epoch */
-    if (check == 0)
+    while (check == 0)
     {
-        while (kik < 10)
-        {
-            for (i=0;i<3;i++) initx(rtk,solMB[i],1E-8,i);
-            for (i=3;i<6;i++) initx(rtk,solMB[i],1E-8,i);
-            for (i=6;i<9;i++) initx(rtk,1E-6,1E-8,i);
-            trace(0, "Tut while:%d\n\r", kik);
-            kik++;
-            return;
-        }
-
-        check = 1;
-        trace(0, "Tut if1\n\r");
+        for (i=0;i<3;i++) initx(rtk,solMB[i],1E-8,i);
+        for (i=3;i<6;i++) initx(rtk,solMB[i],1E-8,i);
+        for (i=6;i<9;i++) initx(rtk,1E-6,1E-8,i);
+        trace(0, "Tut while: %d\n\r", kik++);
         return;
     }
+
     
     
 
@@ -1180,6 +1173,7 @@ static int test_hold_amb(rtk_t *rtk)
     /* test # of continuous fixed */
     return ++rtk->nfix>=rtk->opt.minfix;
 }
+double fractional_part2 = 5.0;
 /* precise point positioning -------------------------------------------------*/
 extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
 {
@@ -1247,22 +1241,34 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     FILE *FAmbiguities;
     FAmbiguities = fopen("Ambiguities.txt", "a+");
     double sum = 0.0;
-    double fractional_part = 0.0;
-    double integer_part;
+    double fractional_part1 = 0.0;
+    double integer_part1 = 0.0;
+    
     float nSat = 0.0;
-
     for (i=0;i<rtk->nx;i++) 
     {
         sum = sum + Pp[i+i*rtk->nx];
 
     }
-    fractional_part = modf(sum, &integer_part);
+    fractional_part1 = modf(sum, &integer_part1);
 
-    nSat = (int) integer_part / 3600;
-    fractional_part = fractional_part + (integer_part - (nSat * 3600));
+    nSat = (int) integer_part1 / 3600;
+    fractional_part1 = fractional_part1 + (integer_part1 - (nSat * 3600));
     
-    fprintf(FAmbiguities, "%f\n", fractional_part);
+    fprintf(FAmbiguities, "%f\n", fractional_part1);
     fclose(FAmbiguities);
+
+    if (((fractional_part2-fractional_part1)/fractional_part1) < 0.02)
+    {
+        check = 1;
+    }
+    else
+    {
+        check = 0;
+    }
+    
+    fractional_part2 = fractional_part1;
+
     if (i>=MAX_ITER) {
         trace(2,"%s ppp (%d) iteration overflows\n",str,i);
     }
