@@ -1,3 +1,5 @@
+# VERSION 0.3.1
+  - Artifitial lighter (auto) 
 # VERSION 0.3.0
   - Artifitial lighter
   - Tracking trace cov-matrix
