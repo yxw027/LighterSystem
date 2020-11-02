@@ -88,6 +88,7 @@ extern strconv_t *strconvnew(int itype, int otype, const char *msgs, int staid,
         free(conv);
         return NULL;
     }
+    
     conv->itype=itype;
     conv->otype=otype;
     conv->stasel=stasel;

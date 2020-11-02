@@ -1237,7 +1237,7 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
             break;
         }
     }
-    /*Изменение неоднозначности*/
+    /*Check lighter*/
     FILE *FAmbiguities;
     FAmbiguities = fopen("Ambiguities.txt", "a+");
     double sum = 0.0;

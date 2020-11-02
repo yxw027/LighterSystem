@@ -1419,6 +1419,7 @@ static int readtcpcli(tcpcli_t *tcpcli, unsigned char *buff, int n, char *msg)
         discontcp(&tcpcli->svr,tcpcli->tirecon);
         return 0;
     }
+    
     if (nr>0) tcpcli->svr.tact=tickget();
     tracet(5,"readtcpcli: exit sock=%d nr=%d\n",tcpcli->svr.sock,nr);
     return nr;
@@ -1443,6 +1444,7 @@ static int writetcpcli(tcpcli_t *tcpcli, unsigned char *buff, int n, char *msg)
         discontcp(&tcpcli->svr,tcpcli->tirecon);
         return 0;
     }
+    
     if (ns>0) tcpcli->svr.tact=tickget();
     tracet(5,"writetcpcli: exit sock=%d ns=%d\n",tcpcli->svr.sock,ns);
     return ns;
@@ -1715,6 +1717,7 @@ static int readntrip(ntrip_t *ntrip, unsigned char *buff, int n, char *msg)
         ntrip->nb=0;
         return nb;
     }
+    
     return readtcpcli(ntrip->tcp,buff,n,msg);
 }
 /* write ntrip ---------------------------------------------------------------*/
@@ -2579,6 +2582,7 @@ static int readmembuf(membuf_t *membuf, unsigned char *buff, int n, char *msg)
     }
     membuf->rp=i;
     unlock(&membuf->lock);
+    
     return nr;
 }
 /* write memory buffer -------------------------------------------------------*/
@@ -2600,6 +2604,7 @@ static int writemembuf(membuf_t *membuf, unsigned char *buff, int n, char *msg)
            membuf->state=-1;
            unlock(&membuf->lock);
            return i+1;
+           
         }
     }
     unlock(&membuf->lock);
@@ -2929,6 +2934,7 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
     
     tracet(4,"strwrite: n=%d\n",n);
     
+    
     if (!(stream->mode&STR_MODE_W)||!stream->port) return 0;
     
     strlock(stream);
@@ -2950,6 +2956,12 @@ extern int strwrite(stream_t *stream, unsigned char *buff, int n)
             strunlock(stream);
             return 0;
     }
+    // This point for input stream. For lighter.
+    if(stream->port == 4444)
+    {
+        trace(0, "%s \r\n", buff);
+    }
+    
     stream->outb+=ns;
     tick=tickget(); if (ns>0) stream->tact=tick;
     
@@ -3016,6 +3028,7 @@ extern int strstat(stream_t *stream, char *msg)
     if (msg) {
         
         strncpy(msg,stream->msg,MAXSTRMSG-1); msg[MAXSTRMSG-1]='\0';
+        
     }
     if (!stream->port) {
         strunlock(stream);
