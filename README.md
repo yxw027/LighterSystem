@@ -1,3 +1,5 @@
+# VERSION 0.3.2
+  - Stream point for lighter
 # VERSION 0.3.1
   - Artifitial lighter (auto) 
 # VERSION 0.3.0
